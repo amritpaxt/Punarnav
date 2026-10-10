@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@600&family=Manrope:wght@400;500;700&family=Mukta:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:SOFT,WONK,wght@50,0,600..900&family=Manrope:wght@400;500;700&family=Mukta:wght@400;600&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -30,7 +30,7 @@
 @layer base {
   body { @apply antialiased; background: var(--bg); color: var(--text); font-family: Manrope, sans-serif; font-size: 16px; line-height: 1.5; font-variant-numeric: tabular-nums; min-width: 320px; overflow-x: hidden; }
   button, input, select, textarea { font: inherit; }
-  h1, h2, h3 { color: var(--text); font-family: Fraunces, Georgia, serif; font-weight: 600; line-height: 1.2; }
+  h1, h2, h3 { color: var(--text); font-family: Fraunces, Georgia, serif; font-variation-settings: "SOFT" 50, "WONK" 0; font-weight: 600; line-height: 1.2; }
   :lang(hi), .hi { font-family: Mukta, Manrope, sans-serif; }
   button, a, input, select, textarea, [role="button"] { -webkit-tap-highlight-color: transparent; }
 }
@@ -77,6 +77,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .btn-primary:hover { filter: brightness(1.04); }
 .card, .glass-card, button, .field { transition-duration: 180ms; }
 .logo-wordmark { font-family: Fraunces, Georgia, serif; }
+.logo-wordmark { font-variation-settings: "SOFT" 50, "WONK" 0; }
 .points-value { color: var(--gold) !important; font-variant-numeric: tabular-nums; }
 .hero-glass { background: var(--surface); border: 1px solid var(--glass-border); }
 @supports (backdrop-filter: blur(1px)) {
@@ -110,6 +111,8 @@ nav button { min-height: 44px; border-radius: var(--radius-pill); background: va
 nav button.bg-charcoal { background: var(--primary) !important; color: var(--bg) !important; }
 .rating-options { display: grid; grid-template-columns: 1fr; gap: 16px; }
 .collector-flat-number { margin-top: 16px; color: var(--text); font-size: 42px; font-weight: 700; line-height: 1; letter-spacing: -.04em; }
+.collector-app, .collector-app :is(h1, h2, h3, button, label, select, p, span) { font-family: Manrope, sans-serif; font-variation-settings: normal; }
+.collector-app :lang(hi), .collector-app .rating-hindi { font-family: Mukta, Manrope, sans-serif; }
 .rating-submit { min-height: 56px; font-size: 17px; }
 .photo-picker { min-height: 112px; border-color: var(--glass-border) !important; background: var(--surface-raised); color: var(--text); }
 .policy-card pre { color: var(--text) !important; font: 13px/1.55 ui-monospace, SFMono-Regular, Consolas, monospace; }
