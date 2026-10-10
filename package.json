@@ -9,10 +9,14 @@
     "lint": "eslint . --max-warnings=0",
     "test": "vitest run",
     "sandbox": "npx ampx sandbox",
+    "copy:outputs": "node scripts/copy-amplify-outputs.mjs",
     "bootstrap": "tsx scripts/bootstrap.ts",
     "seed:demo": "tsx scripts/seed-demo.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.1149.0",
+    "@aws-sdk/client-dynamodb": "^3.1149.0",
+    "@aws-sdk/lib-dynamodb": "^3.1149.0",
     "aws-amplify": "^6.15.0",
     "html5-qrcode": "^2.3.8",
     "qrcode": "^1.5.4",

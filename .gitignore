@@ -4,6 +4,7 @@ dist/
 .env.*
 !.env.example
 amplify_outputs.json
+public/amplify_outputs.json
 .amplify/
 .amplify-hosting/
 *.log

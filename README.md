@@ -1,53 +1,65 @@
 # Punarnav
 
-Punarnav is a mobile-first housing-society waste segregation app. Residents see verified pickups, points, streaks, tower rankings, rewards, and issue reports. Collectors record a flat's wet/dry segregation with a QR scan or manual selection and photo evidence. Society admins review trends, resident approvals, reports, collector flags, flat QR codes, and packaging returns.
+Punarnav is a mobile-first housing society waste segregation app. The local demo remains the default. Set `VITE_BACKEND=aws` to use the Amplify/Cognito account flow currently implemented for Step 1.
 
-## Run the working local demo
+## Local mode
 
-Requirements: Node.js 20 or newer.
-
-```bash
-npm install
+```powershell
+$env:VITE_BACKEND = "local"
 npm run dev
 ```
 
-The browser app starts in local demo mode. Sample accounts (PIN `1234`):
+Use the sample accounts shown on the local sign-in screen. Activity is saved in this browser. Clear site storage to restore the original fixture.
 
-| Role | Email |
-| --- | --- |
-| Resident | `resident@punarnav.demo` |
-| Collector | `collector@punarnav.demo` |
-| Admin | `admin@punarnav.demo` |
+## AWS mode setup
 
-Demo society activity and photos are stored in browser local storage. Sign-in state lasts for the browser session. Use the admin's **People** tab to approve resident signup requests. The admin **Flats** tab can generate and print QR codes; the collector can scan these on a camera-enabled device or select a flat manually. Use a fresh browser profile or clear site storage to restore the initial demo fixture.
+Use Node.js 20 or newer and an AWS profile with permission to deploy the Amplify sandbox. In terminal 1, start the backend and leave it running:
 
-## Working demo flows
-
-- Resident email/PIN sign-in and pending resident registration.
-- Collector route list, camera QR scan, manual flat selection, Hindi/English labels, photo evidence, one rating per flat per society-local day, and uniform pickup points.
-- Resident pickup history, GREEN/YELLOW/RED feedback, points, streak display, tower leaderboard, rewards with a 10-pickup unlock, and a single issue report per pickup.
-- Admin overview with tower segregation rates and estimated landfill diversion, collector pattern flags, resident approval, photo/report review, flat QR generation, and packaging-return logging.
-- State is saved in the current browser and seeded with sample society activity for a populated demo.
-
-## Cloud backend status
-
-An AWS Amplify backend scaffold is included under `amplify/` with Cognito groups, read models, S3 storage, and custom mutation entry points. The browser currently runs the local demo and does not connect those screens to AWS. The Lambda mutation handler is a validation stub: DynamoDB transactional persistence, ledger corrections, fully enforced society authorization, live photo uploads, Cognito provisioning, and output configuration still need implementation before cloud deployment. Do not use the local demo PINs or browser storage for real resident data.
-
-To begin the AWS setup after completing those backend pieces:
-
-```bash
-npx ampx sandbox
+```powershell
+npm run sandbox
 ```
 
-Then connect Amplify outputs and the authenticated data/storage clients in the app entrypoint before deploying a live environment.
+In terminal 2, copy the generated client configuration:
 
-## Points and verification rules shown in the demo
+```powershell
+npm run copy:outputs
+```
 
-- GREEN resident pickup: 10 points; YELLOW: 3; RED: 0.
-- Collector: 2 points per completed pickup regardless of rating.
-- Packaging return: 5 points per logged return (stretch flow).
-- Rewards require at least 10 verified pickups and enough points.
-- Collectors must attach a photo to GREEN, YELLOW, or RED ratings; NO BIN does not require a photo.
-- The demo prevents a second pickup entry for the same flat on the same IST date.
+In terminal 3, start the frontend in AWS mode:
 
-The concept's image classification, external voucher fulfilment, recycler bookings, compost integrations, and energy features are not part of the working local MVP.
+```powershell
+$env:VITE_BACKEND = "aws"
+npm run dev
+```
+
+The frontend loads `public/amplify_outputs.json`; that generated file is ignored by Git. To return to the local demo, set `$env:VITE_BACKEND = "local"` or remove that environment variable.
+
+## AWS account flow in this step
+
+- Resident registration uses Cognito email confirmation, then a Lambda creates a PENDING resident profile after validating the society invite code and active flat.
+- Pending accounts see a waiting screen with refresh and sign-out controls.
+- An active ADMIN can approve/reject pending residents, invite COLLECTOR or ADMIN accounts, and deactivate/reactivate other users in the same society.
+- Cognito assigns groups on the server. Invited accounts use Cognito's temporary-password challenge at first sign-in.
+- Business mutations check the caller's role group and ACTIVE profile in the Lambda. Admin target profiles are checked against the admin's society before account changes.
+- Model writes are not exposed to browser clients. Account writes in this step use the `adminAction` or `registerResident` custom mutation.
+
+Resident signup requires the society ID, society invite code, and flat ID supplied by the society. UserProfile IDs are Cognito `sub` values. An initial active ADMIN profile and group membership must already exist before the admin screens can be reached; the current `bootstrap` script is still a placeholder.
+
+## Remaining work
+
+Only Step 1 (accounts and people) is implemented in AWS mode. The checked-in `ratePickup`, `redeemReward`, and `raiseDispute` Lambda paths still return `NOT_IMPLEMENTED_IN_THIS_STEP`; the local demo is a separate browser-only implementation. AWS screens for flat management, disputes, rewards, packaging, flags, audit history, and the remaining dashboard flows are not connected yet. The demo seed and bootstrap scripts also remain placeholders. Do not use local demo credentials or browser storage for real resident data.
+
+## Step 1 verification
+
+After deploying the sandbox and creating or using an existing ACTIVE admin profile in the ADMIN Cognito group:
+
+1. Sign in at the frontend with that admin account and open **People and access**.
+2. Sign up a resident with the matching society ID, invite code, and active flat ID; confirm the Cognito email code.
+3. The resident should land on **Waiting for approval**. Refresh keeps the page pending until approval; sign-out returns to Cognito sign-in.
+4. As admin, approve that resident. Refresh the resident page; it should leave the pending screen. Cognito should list the user in RESIDENT.
+5. Repeat with a second resident and reject them. The profile should be gone and Cognito should show the user disabled.
+6. Invite a collector and an admin. Cognito should send temporary credentials and show the assigned group; first sign-in should require a new password.
+7. Deactivate a different active account. Cognito should show it disabled and its UserProfile should be DEACTIVATED. Reactivate it and confirm both return to enabled/ACTIVE.
+8. With an already-issued token for a deactivated account, call `adminAction`; it should be rejected by the Lambda's ACTIVE-profile check.
+
+The build can be checked locally with `npm run build`. This does not deploy AWS resources or verify Cognito email delivery, IAM permissions, or runtime mutations.
