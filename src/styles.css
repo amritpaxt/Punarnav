@@ -130,3 +130,26 @@ nav button.bg-charcoal { background: var(--primary) !important; color: var(--bg)
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
 }
+
+/* Roko and impact story: decorative motion stays optional via reduced-motion above. */
+.roko-orb { animation: roko-float 3.2s ease-in-out infinite; }
+.roko-orb img { height: 128%; width: 128%; max-width: none; object-fit: cover; object-position: center 18%; }
+.roko-orb:hover { transform: scale(1.08) rotate(-4deg); }
+.roko-chat { backdrop-filter: blur(20px); }
+.truck-loader { position: fixed; z-index: 40; top: 13px; left: -80px; font-size: 28px; filter: drop-shadow(0 4px 6px rgba(0,0,0,.35)); pointer-events: none; animation: truck-drive 3.8s ease-in-out 1; }
+.cleanup-stage { position: relative; height: clamp(260px, 38vw, 460px); overflow: hidden; background: #233326; }
+.cleanup-stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.cleanup-dirty { filter: saturate(.55) brightness(.68) sepia(.28); }
+.cleanup-clean { position: absolute; inset: 0; overflow: hidden; }
+.cleanup-clean img { filter: saturate(1.18) brightness(1.12); }
+.cleanup-stage input { position: absolute; z-index: 3; inset: 0; width: 100%; height: 100%; cursor: ew-resize; opacity: 0; }
+.cleanup-line { position: absolute; z-index: 2; top: 0; bottom: 0; width: 3px; background: var(--gold); box-shadow: 0 0 0 2px rgba(15,26,20,.4); transform: translateX(-50%); pointer-events: none; }
+.cleanup-line span { position: absolute; top: 50%; left: 50%; display: grid; width: 40px; height: 40px; place-items: center; border-radius: 50%; background: var(--gold); color: var(--bg); transform: translate(-50%,-50%); transition: transform .25s ease; }
+.cleanup-stage:hover .cleanup-line span { transform: translate(-50%,-50%) rotate(180deg); }
+.cleanup-label { position: absolute; z-index: 2; bottom: 14px; border-radius: 999px; padding: 6px 10px; background: rgba(15,26,20,.72); color: white; font-size: 12px; font-weight: 700; pointer-events: none; }
+.cleanup-label.before { left: 14px; }.cleanup-label.after { right: 14px; }
+.schedule-bin { display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; padding: 8px 14px; background: var(--primary); color: var(--bg); font-size: 13px; font-weight: 800; }
+.bin-body { display: grid; width: 24px; height: 25px; place-items: center; border-radius: 3px 3px 6px 6px; background: #176b43; color: #d4e4c6; font-size: 12px; }.bin-lid { width: 27px; height: 5px; margin-right: -35px; align-self: flex-start; border-radius: 4px; background: #176b43; transform-origin: left center; transition: transform .32s ease; }.schedule-bin:hover .bin-lid { transform: rotate(-42deg) translateY(-5px); }.schedule-bin:hover .bin-body { animation: recycle-spin .8s ease; }
+@keyframes roko-float { 50% { transform: translateY(-7px); } }
+@keyframes truck-drive { 0% { transform: translateX(0) rotate(0); opacity: 0; } 8% { opacity: 1; } 78% { opacity: 1; } 100% { transform: translateX(calc(100vw + 180px)); opacity: 0; } }
+@keyframes recycle-spin { 50% { transform: rotate(180deg) scale(1.13); } }
