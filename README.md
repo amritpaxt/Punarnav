@@ -1,60 +1,53 @@
 # Punarnav
 
-Punarnav is a MyGate-style waste-verification MVP for Indian housing societies. A collector verifies a wet/dry bin at the flat door; the **flat** earns points and a verified-segregation streak. The collector earns the same two points for every completed pickup, regardless of their rating.
+Punarnav is a mobile-first housing-society waste segregation app. Residents see verified pickups, points, streaks, tower rankings, rewards, and issue reports. Collectors record a flat's wet/dry segregation with a QR scan or manual selection and photo evidence. Society admins review trends, resident approvals, reports, collector flags, flat QR codes, and packaging returns.
 
-## Architecture
+## Run the working local demo
 
-```mermaid
-flowchart LR
-  R[React + Vite + Tailwind] -->|Cognito JWT| A[AppSync custom mutations]
-  A --> L[Lambda business boundary]
-  L --> D[(DynamoDB / Amplify Data)]
-  R -->|pickup photo upload| S[S3 pickup path]
-  L -->|validates object, society, role, IST day| D
-  C[Cognito] --> R
-  H[Amplify Hosting] --> R
-```
-
-## Security contract
-
-- The schema grants clients read-only access to business models. Rating, ledger, redemption, dispute, and admin changes are custom Lambda mutations.
-- Lambdas must derive identity and group from the Cognito JWT, resolve the caller's active `UserProfile`, and condition every DynamoDB operation on the resolved `societyId`.
-- Public sign-up is resident-only and produces a `PENDING` profile. Elevated groups are admin-invite-only and server assigned.
-- Ledger rows are append-only. A correction is a reversal plus a new row, both in one transaction.
-- Every data-changing admin action writes `AuditLog` in the same transaction.
-- Rate transactions use an IST `flatId#date` conditional key. A second rate returns the original read-only pickup.
-
-## Local setup
+Requirements: Node.js 20 or newer.
 
 ```bash
 npm install
-npx ampx sandbox
 npm run dev
 ```
 
-Copy the sandbox-generated `amplify_outputs.json` into the project root before connecting the browser to AWS. Configure Amplify in the entrypoint using those outputs before deploying a live environment.
+The browser app starts in local demo mode. Sample accounts (PIN `1234`):
 
-## Operator workflow
+| Role | Email |
+| --- | --- |
+| Resident | `resident@punarnav.demo` |
+| Collector | `collector@punarnav.demo` |
+| Admin | `admin@punarnav.demo` |
 
-1. Run `npm run bootstrap` with AWS credentials and sandbox outputs. It must create the first society, towers, active flats, and first admin through the server-only operator flow.
-2. Sign in as the admin, approve pending residents, and invite collectors/admins. Temporary-password users complete the Cognito forced password change flow.
-3. Run `npm run seed:demo` only in a demo environment. It is deliberately separate from bootstrap.
-4. Deploy with Amplify Hosting after the backend has been deployed: `npx ampx pipeline-deploy --branch main --app-id <app-id>`.
+Demo society activity and photos are stored in browser local storage. Sign-in state lasts for the browser session. Use the admin's **People** tab to approve resident signup requests. The admin **Flats** tab can generate and print QR codes; the collector can scan these on a camera-enabled device or select a flat manually. Use a fresh browser profile or clear site storage to restore the initial demo fixture.
 
-## Required demo fixture
+## Working demo flows
 
-The demo seed must make one society, four towers, 40 flats (two vacant), three collectors, 25 residents, 14 IST days of varied pickup history, four rewards, two open disputes, an improving tower, and a collector with 100% GREEN history. Store demo credentials outside source control and expose them only in the hackathon demo environment.
+- Resident email/PIN sign-in and pending resident registration.
+- Collector route list, camera QR scan, manual flat selection, Hindi/English labels, photo evidence, one rating per flat per society-local day, and uniform pickup points.
+- Resident pickup history, GREEN/YELLOW/RED feedback, points, streak display, tower leaderboard, rewards with a 10-pickup unlock, and a single issue report per pickup.
+- Admin overview with tower segregation rates and estimated landfill diversion, collector pattern flags, resident approval, photo/report review, flat QR generation, and packaging-return logging.
+- State is saved in the current browser and seeded with sample society activity for a populated demo.
 
-## Authorisation checklist
+## Cloud backend status
 
-| Role | Allowed | Must be denied |
-| --- | --- | --- |
-| Resident | Read own society data, raise one timely dispute, redeem own flat balance | Rating, ledger writes, other-flat data, elevated roles |
-| Collector | Read society route, rate an active flat once per IST day | Rating own work twice, cross-society paths, points edits |
-| Admin | Invite/approve/deactivate, resolve/override, manage rewards/flats | Unlogged direct writes, cross-society access |
+An AWS Amplify backend scaffold is included under `amplify/` with Cognito groups, read models, S3 storage, and custom mutation entry points. The browser currently runs the local demo and does not connect those screens to AWS. The Lambda mutation handler is a validation stub: DynamoDB transactional persistence, ledger corrections, fully enforced society authorization, live photo uploads, Cognito provisioning, and output configuration still need implementation before cloud deployment. Do not use the local demo PINs or browser storage for real resident data.
 
-Test each row with separate Cognito users and assert AppSync returns `UNAUTHORIZED` for forbidden direct mutations.
+To begin the AWS setup after completing those backend pieces:
 
-## Known verification limits for this handoff
+```bash
+npx ampx sandbox
+```
 
-The project source and interactive UI shell were written in this session, but the execution environment repeatedly failed before it could start **any** PowerShell process (`helper_unknown_error: setup refresh had errors`). Consequently I could not run `npm install`, `ampx sandbox`, TypeScript, lint, tests, seed/bootstrap, camera/S3 flows, or deployment. The Lambda file currently documents/enforces input and JWT checks but still needs its DynamoDB transactional repository implementation and live Amplify output wiring before it meets the full production brief. Do not treat this build as deployment-verified.
+Then connect Amplify outputs and the authenticated data/storage clients in the app entrypoint before deploying a live environment.
+
+## Points and verification rules shown in the demo
+
+- GREEN resident pickup: 10 points; YELLOW: 3; RED: 0.
+- Collector: 2 points per completed pickup regardless of rating.
+- Packaging return: 5 points per logged return (stretch flow).
+- Rewards require at least 10 verified pickups and enough points.
+- Collectors must attach a photo to GREEN, YELLOW, or RED ratings; NO BIN does not require a photo.
+- The demo prevents a second pickup entry for the same flat on the same IST date.
+
+The concept's image classification, external voucher fulfilment, recycler bookings, compost integrations, and energy features are not part of the working local MVP.
