@@ -92,10 +92,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .decision-allow::before { background: var(--status-segregated); }
 .decision-deny::before { background: var(--status-mixed); }
 .tower-own { border-radius: var(--radius-sm); outline: 1px solid var(--primary); outline-offset: 5px; }
-.leaderboard-bar { transform: scaleX(0); transform-origin: left; animation: grow-bar 600ms ease-out forwards; }
-.rating-option { display: flex; min-height: 72px; width: 100%; flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; border: 2px solid transparent; border-radius: var(--radius-md); padding: 10px 16px; color: var(--bg); text-align: left; font-size: 20px; font-weight: 700; line-height: 1.2; transition: transform 160ms ease, outline-color 160ms ease; }
-.rating-option:hover { transform: translateY(-1px); }
-.rating-option.is-selected { outline: 3px solid var(--text); outline-offset: 2px; transform: scale(1.02); }
+.leaderboard-bar { transform-origin: left; }
+.rating-option { position: relative; display: flex; min-height: 72px; width: 100%; flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; border: 2px solid transparent; border-radius: var(--radius-md); padding: 10px 16px; color: var(--bg); text-align: left; font-size: 20px; font-weight: 700; line-height: 1.2; transition: outline-color 160ms ease; }
+.rating-option:hover { filter: brightness(1.04); }
+.rating-option.is-selected { outline: 3px solid var(--text); outline-offset: 2px; }
 .rating-green { background: var(--status-segregated); }
 .rating-yellow { background: var(--status-partly); }
 .rating-red { background: var(--status-mixed); }
@@ -103,6 +103,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .rating-hindi { font-family: Mukta, Manrope, sans-serif; font-size: 22px; }
 .rating-english { font-size: 15px; font-weight: 500; }
 .rating-symbol { margin-left: auto; font-size: 24px; }
+.leaf-burst { position: absolute; z-index: 2; left: 50%; top: 50%; color: var(--primary-hi); font-size: 10px; line-height: 1; pointer-events: none; }
 .flat-row { flex-wrap: wrap; gap: 8px; }
 .flat-controls { display: flex; flex-wrap: wrap; gap: 8px; }
 .role-options button { min-height: 88px; border-color: var(--glass-border) !important; border-radius: var(--radius-md); background: var(--glass-bg); color: var(--text); backdrop-filter: blur(var(--glass-blur)); }
@@ -116,17 +117,10 @@ nav button.bg-charcoal { background: var(--primary) !important; color: var(--bg)
 .rating-submit { min-height: 56px; font-size: 17px; }
 .photo-picker { min-height: 112px; border-color: var(--glass-border) !important; background: var(--surface-raised); color: var(--text); }
 .policy-card pre { color: var(--text) !important; font: 13px/1.55 ui-monospace, SFMono-Regular, Consolas, monospace; }
-tbody tr:first-child { animation: log-arrive 240ms ease-out both; }
 .policy-card { overflow: auto; border: 1px solid var(--glass-border); border-radius: var(--radius-md); background: var(--surface-raised); padding: 12px; }
 .history-photo { height: 52px; width: 52px; border-radius: var(--radius-sm); object-fit: cover; }
 .plant-svg { height: 72px; width: 96px; overflow: visible; }
-.plant-leaf { fill: var(--status-segregated); transform-box: fill-box; transform-origin: bottom center; animation: leaf-grow 380ms cubic-bezier(.2,.8,.2,1) both; }
-.plant-droop { transform: rotate(9deg); transform-origin: bottom center; }
-main { animation: page-in 220ms ease-out both; }
-@keyframes page-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes leaf-grow { from { opacity: 0; transform: scale(.2); } to { opacity: 1; transform: scale(1); } }
-@keyframes grow-bar { to { transform: scaleX(1); } }
-@keyframes log-arrive { 0% { opacity: .65; transform: translateY(-6px); } 100% { opacity: 1; transform: translateY(0); } }
+.plant-leaf { fill: var(--status-segregated); transform-box: fill-box; transform-origin: bottom center; }
 @media (max-width: 640px) {
   main { padding-left: 16px !important; padding-right: 16px !important; }
   .flat-row > :first-child { flex: 1 1 100%; }

@@ -19,6 +19,7 @@
     "@aws-sdk/lib-dynamodb": "^3.1149.0",
     "@cedar-policy/cedar-wasm": "^4.13.0",
     "aws-amplify": "^6.15.0",
+    "framer-motion": "^14.1.0",
     "html5-qrcode": "^2.3.8",
     "qrcode": "^1.5.4",
     "react": "^19.1.1",
