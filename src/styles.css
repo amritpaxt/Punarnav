@@ -4,7 +4,7 @@
 @tailwind utilities;
 
 :root {
-  --bg: #0F1A14;
+  --bg: #10251A;
   --surface: #1A2A21;
   --surface-raised: #24382C;
   --glass-bg: rgba(255,255,255,0.06);
@@ -28,7 +28,7 @@
 }
 
 @layer base {
-  body { @apply antialiased; background: var(--bg); color: var(--text); font-family: Manrope, sans-serif; font-size: 16px; line-height: 1.5; font-variant-numeric: tabular-nums; min-width: 320px; overflow-x: hidden; }
+  body { @apply antialiased; position: relative; isolation: isolate; background: linear-gradient(145deg, #dcebd0 0%, #8fb894 25%, #315a42 61%, #10251a 100%); background-attachment: fixed; color: var(--text); font-family: Manrope, sans-serif; font-size: 16px; line-height: 1.5; font-variant-numeric: tabular-nums; min-width: 320px; overflow-x: hidden; }
   button, input, select, textarea { font: inherit; }
   h1, h2, h3 { color: var(--text); font-family: Fraunces, Georgia, serif; font-variation-settings: "SOFT" 50, "WONK" 0; font-weight: 600; line-height: 1.2; }
   :lang(hi), .hi { font-family: Mukta, Manrope, sans-serif; }
@@ -153,3 +153,12 @@ nav button.bg-charcoal { background: var(--primary) !important; color: var(--bg)
 @keyframes roko-float { 50% { transform: translateY(-7px); } }
 @keyframes truck-drive { 0% { transform: translateX(0) rotate(0); opacity: 0; } 8% { opacity: 1; } 78% { opacity: 1; } 100% { transform: translateX(calc(100vw + 180px)); opacity: 0; } }
 @keyframes recycle-spin { 50% { transform: rotate(180deg) scale(1.13); } }
+
+/* Ambient background: calm growth rather than distracting particles. */
+body::before, body::after { position: fixed; z-index: 0; content: ''; pointer-events: none; filter: blur(4px); }
+body::before { top: -18vh; right: -15vw; width: min(72vw, 850px); height: min(72vw, 850px); border-radius: 47% 53% 61% 39% / 43% 42% 58% 57%; background: radial-gradient(circle at 35% 35%, rgba(255,250,210,.74), rgba(179,224,126,.24) 39%, transparent 70%); animation: ambient-drift 16s ease-in-out infinite alternate; }
+body::after { bottom: -22vh; left: -12vw; width: min(62vw, 720px); height: min(62vw, 720px); border-radius: 62% 38% 42% 58% / 51% 55% 45% 49%; background: radial-gradient(circle, rgba(44,111,68,.55), transparent 67%); animation: ambient-drift 21s ease-in-out infinite alternate-reverse; }
+@keyframes ambient-drift { from { transform: translate3d(-2%, -1%, 0) scale(.96) rotate(-4deg); opacity: .75; } to { transform: translate3d(6%, 5%, 0) scale(1.08) rotate(7deg); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { body::before, body::after { animation: none; } }
+
+#root { position: relative; z-index: 1; }
