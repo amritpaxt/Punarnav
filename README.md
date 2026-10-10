@@ -1,65 +1,45 @@
 # Punarnav
 
-Punarnav is a mobile-first housing society waste segregation app. The local demo remains the default. Set `VITE_BACKEND=aws` to use the Amplify/Cognito account flow currently implemented for Step 1.
+Punarnav is a local prototype for waste pickup verification, resident points, rewards, and society administration. It uses Cedar, AWS's open-source authorization policy language, through the official Cedar WASM package for local permission decisions. Demo data is stored in the browser (`localStorage`); no AWS account or deployed backend is used by the app. The checked-in Amplify backend files are a designed future step and are not deployed or connected to the local demo.
 
-## Local mode
+## Run the local demo
+
+Use Node.js 20 or newer:
 
 ```powershell
-$env:VITE_BACKEND = "local"
+npm install
 npm run dev
 ```
 
-Use the sample accounts shown on the local sign-in screen. Activity is saved in this browser. Clear site storage to restore the original fixture.
+Open the local URL printed by Vite. Use the sample accounts shown on the sign-in screen (PIN `1234`). Local activity stays in this browser. Clear the site's storage to restore the original demo fixture.
 
-## AWS mode setup
+## Cedar authorization
 
-Use Node.js 20 or newer and an AWS profile with permission to deploy the Amplify sandbox. In terminal 1, start the backend and leave it running:
+- The policies are in [`src/policies/punarnav.cedar`](src/policies/punarnav.cedar) and the entity/action schema is in [`src/policies/punarnav.schema.json`](src/policies/punarnav.schema.json).
+- The local UI calls `authorize(principal, action, resource)` before protected changes. Cedar denies actions by default and explicitly forbids non-ACTIVE users.
+- Sign in as the admin and open **Permissions** to read the policy source and see recent ALLOW/DENY decisions with the deciding policy.
+- Run the policy suite with `npm test`. A passing run reports all policy tests passing.
+- Check TypeScript and the production bundle with `npm run build`. Success ends with Vite reporting the generated bundle under `dist/`.
+
+## Demo accounts and click path
+
+The local sign-in screen displays the current demo email addresses. Enter PIN `1234` for each account.
+
+- **Resident:** Home, History, Rewards, and Learn. Dispute a pickup from Home and redeem a reward from Rewards.
+- **Collector:** Scan a flat QR or choose a flat manually, take or attach a pickup photo, select a rating, and save.
+- **Admin:** Overview, People, Disputes, Flats, Packaging, and Permissions. Approve/reject residents, resolve reports, inspect flat QRs, log a packaging return, and review Cedar decisions.
+
+The Permissions log is local browser data and is capped at the latest 100 decisions. Policy tests use Cedar's Node WASM binding against the same `.cedar` policy source and schema.
+
+## Future: AWS backend
+
+The Amplify files are scaffolding for a possible later deployment. They are not required for the local prototype and have not been deployed or verified against an AWS account. AWS-specific scripts are retained for future work:
 
 ```powershell
 npm run sandbox
-```
-
-In terminal 2, copy the generated client configuration:
-
-```powershell
 npm run copy:outputs
+npm run bootstrap
+npm run seed:demo
 ```
 
-In terminal 3, start the frontend in AWS mode:
-
-```powershell
-$env:VITE_BACKEND = "aws"
-npm run dev
-```
-
-The frontend loads `public/amplify_outputs.json`; that generated file is ignored by Git. To return to the local demo, set `$env:VITE_BACKEND = "local"` or remove that environment variable.
-
-## AWS account flow in this step
-
-- Resident registration uses Cognito email confirmation, then a Lambda creates a PENDING resident profile after validating the society invite code and active flat.
-- Pending accounts see a waiting screen with refresh and sign-out controls.
-- An active ADMIN can approve/reject pending residents, invite COLLECTOR or ADMIN accounts, and deactivate/reactivate other users in the same society.
-- Cognito assigns groups on the server. Invited accounts use Cognito's temporary-password challenge at first sign-in.
-- Business mutations check the caller's role group and ACTIVE profile in the Lambda. Admin target profiles are checked against the admin's society before account changes.
-- Model writes are not exposed to browser clients. Account writes in this step use the `adminAction` or `registerResident` custom mutation.
-
-Resident signup requires the society ID, society invite code, and flat ID supplied by the society. UserProfile IDs are Cognito `sub` values. An initial active ADMIN profile and group membership must already exist before the admin screens can be reached; the current `bootstrap` script is still a placeholder.
-
-## Remaining work
-
-Only Step 1 (accounts and people) is implemented in AWS mode. The checked-in `ratePickup`, `redeemReward`, and `raiseDispute` Lambda paths still return `NOT_IMPLEMENTED_IN_THIS_STEP`; the local demo is a separate browser-only implementation. AWS screens for flat management, disputes, rewards, packaging, flags, audit history, and the remaining dashboard flows are not connected yet. The demo seed and bootstrap scripts also remain placeholders. Do not use local demo credentials or browser storage for real resident data.
-
-## Step 1 verification
-
-After deploying the sandbox and creating or using an existing ACTIVE admin profile in the ADMIN Cognito group:
-
-1. Sign in at the frontend with that admin account and open **People and access**.
-2. Sign up a resident with the matching society ID, invite code, and active flat ID; confirm the Cognito email code.
-3. The resident should land on **Waiting for approval**. Refresh keeps the page pending until approval; sign-out returns to Cognito sign-in.
-4. As admin, approve that resident. Refresh the resident page; it should leave the pending screen. Cognito should list the user in RESIDENT.
-5. Repeat with a second resident and reject them. The profile should be gone and Cognito should show the user disabled.
-6. Invite a collector and an admin. Cognito should send temporary credentials and show the assigned group; first sign-in should require a new password.
-7. Deactivate a different active account. Cognito should show it disabled and its UserProfile should be DEACTIVATED. Reactivate it and confirm both return to enabled/ACTIVE.
-8. With an already-issued token for a deactivated account, call `adminAction`; it should be rejected by the Lambda's ACTIVE-profile check.
-
-The build can be checked locally with `npm run build`. This does not deploy AWS resources or verify Cognito email delivery, IAM permissions, or runtime mutations.
+For a future deployment, configure the AWS profile, deploy the Amplify sandbox, provide the generated outputs, and finish the remaining backend mutations and role flows before connecting the frontend. Do not treat these commands as part of local setup.

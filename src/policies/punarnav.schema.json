@@ -1,0 +1,29 @@
+{
+  "Punarnav": {
+    "entityTypes": {
+      "User": { "shape": { "type": "Record", "attributes": { "role": { "type": "String" }, "status": { "type": "String" }, "societyId": { "type": "String" }, "flatId": { "type": "String" } } } },
+      "Flat": { "shape": { "type": "Record", "attributes": { "id": { "type": "String" }, "societyId": { "type": "String" }, "status": { "type": "String" } } } },
+      "Pickup": { "shape": { "type": "Record", "attributes": { "id": { "type": "String" }, "societyId": { "type": "String" }, "flatId": { "type": "String" } } } },
+      "Dispute": { "shape": { "type": "Record", "attributes": { "id": { "type": "String" }, "societyId": { "type": "String" }, "flatId": { "type": "String" } } } },
+      "Reward": { "shape": { "type": "Record", "attributes": { "id": { "type": "String" }, "societyId": { "type": "String" }, "flatId": { "type": "String" } } } },
+      "UserProfile": { "shape": { "type": "Record", "attributes": { "id": { "type": "String" }, "societyId": { "type": "String" }, "role": { "type": "String" }, "status": { "type": "String" } } } }
+    },
+    "actions": {
+      "rate_flat": { "appliesTo": { "principalTypes": ["Punarnav::User"], "resourceTypes": ["Punarnav::Flat"] } },
+      "view_pickup": { "appliesTo": { "principalTypes": ["Punarnav::User"], "resourceTypes": ["Punarnav::Pickup"] } },
+      "view_points": { "appliesTo": { "principalTypes": ["Punarnav::User"], "resourceTypes": ["Punarnav::Flat"] } },
+      "request_signup": { "appliesTo": { "principalTypes": ["Punarnav::User"], "resourceTypes": ["Punarnav::UserProfile"] } },
+      "sign_in": { "appliesTo": { "principalTypes": ["Punarnav::User"], "resourceTypes": ["Punarnav::UserProfile"] } },
+      "raise_dispute": { "appliesTo": { "principalTypes": ["Punarnav::User"], "resourceTypes": ["Punarnav::Pickup"] } },
+      "approve_resident": { "appliesTo": { "principalTypes": ["Punarnav::User"], "resourceTypes": ["Punarnav::UserProfile"] } },
+      "reject_resident": { "appliesTo": { "principalTypes": ["Punarnav::User"], "resourceTypes": ["Punarnav::UserProfile"] } },
+      "resolve_dispute": { "appliesTo": { "principalTypes": ["Punarnav::User"], "resourceTypes": ["Punarnav::Dispute"] } },
+      "override_rating": { "appliesTo": { "principalTypes": ["Punarnav::User"], "resourceTypes": ["Punarnav::Pickup"] } },
+      "manage_flat": { "appliesTo": { "principalTypes": ["Punarnav::User"], "resourceTypes": ["Punarnav::Flat"] } },
+      "manage_qr": { "appliesTo": { "principalTypes": ["Punarnav::User"], "resourceTypes": ["Punarnav::Flat"] } },
+      "log_packaging": { "appliesTo": { "principalTypes": ["Punarnav::User"], "resourceTypes": ["Punarnav::Flat"] } },
+      "manage_reward": { "appliesTo": { "principalTypes": ["Punarnav::User"], "resourceTypes": ["Punarnav::Reward"] } },
+      "redeem_reward": { "appliesTo": { "principalTypes": ["Punarnav::User"], "resourceTypes": ["Punarnav::Reward"] } }
+    }
+  }
+}
