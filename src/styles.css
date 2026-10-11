@@ -28,7 +28,7 @@
 }
 
 @layer base {
-  body { @apply antialiased; position: relative; isolation: isolate; background: linear-gradient(145deg, #dcebd0 0%, #8fb894 25%, #315a42 61%, #10251a 100%); background-attachment: fixed; color: var(--text); font-family: Manrope, sans-serif; font-size: 16px; line-height: 1.5; font-variant-numeric: tabular-nums; min-width: 320px; overflow-x: hidden; }
+  body { @apply antialiased; position: relative; isolation: isolate; background: linear-gradient(145deg, #173a27 0%, #10251a 46%, #0b1710 100%); background-attachment: fixed; color: var(--text); font-family: Manrope, sans-serif; font-size: 16px; line-height: 1.5; font-variant-numeric: tabular-nums; min-width: 320px; overflow-x: hidden; }
   button, input, select, textarea { font: inherit; }
   h1, h2, h3 { color: var(--text); font-family: Fraunces, Georgia, serif; font-variation-settings: "SOFT" 50, "WONK" 0; font-weight: 600; line-height: 1.2; }
   :lang(hi), .hi { font-family: Mukta, Manrope, sans-serif; }
@@ -156,9 +156,85 @@ nav button.bg-charcoal { background: var(--primary) !important; color: var(--bg)
 
 /* Ambient background: calm growth rather than distracting particles. */
 body::before, body::after { position: fixed; z-index: 0; content: ''; pointer-events: none; filter: blur(4px); }
-body::before { top: -18vh; right: -15vw; width: min(72vw, 850px); height: min(72vw, 850px); border-radius: 47% 53% 61% 39% / 43% 42% 58% 57%; background: radial-gradient(circle at 35% 35%, rgba(255,250,210,.74), rgba(179,224,126,.24) 39%, transparent 70%); animation: ambient-drift 16s ease-in-out infinite alternate; }
+body::before { top: -18vh; right: -15vw; width: min(72vw, 850px); height: min(72vw, 850px); border-radius: 47% 53% 61% 39% / 43% 42% 58% 57%; background: radial-gradient(circle at 35% 35%, rgba(142,184,131,.24), rgba(102,154,90,.12) 39%, transparent 70%); animation: ambient-drift 16s ease-in-out infinite alternate; }
 body::after { bottom: -22vh; left: -12vw; width: min(62vw, 720px); height: min(62vw, 720px); border-radius: 62% 38% 42% 58% / 51% 55% 45% 49%; background: radial-gradient(circle, rgba(44,111,68,.55), transparent 67%); animation: ambient-drift 21s ease-in-out infinite alternate-reverse; }
 @keyframes ambient-drift { from { transform: translate3d(-2%, -1%, 0) scale(.96) rotate(-4deg); opacity: .75; } to { transform: translate3d(6%, 5%, 0) scale(1.08) rotate(7deg); opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { body::before, body::after { animation: none; } }
 
 #root { position: relative; z-index: 1; }
+
+/* Shared responsive guardrails for the local role screens and AWS sign-in. */
+html, body, #root { width: 100%; max-width: 100%; overflow-x: clip; }
+main, section, nav, .card, .glass-card, .app-shell, .login-layout { min-width: 0; }
+img, video, canvas, svg { max-width: 100%; }
+button, input, select, textarea, summary { min-height: 44px; }
+input[type="checkbox"], input[type="radio"] { min-height: 24px; min-width: 24px; }
+.app-shell { width: min(100% - 32px, 1200px); max-width: 1200px !important; margin-inline: auto; }
+.responsive-table { max-width: 100%; overflow-x: auto; overscroll-behavior-inline: contain; }
+.responsive-table table { width: 100%; min-width: 640px; border-collapse: collapse; }
+.responsive-table th, .responsive-table td { white-space: nowrap; }
+.login-mobile-brand { display: none; }
+.cleanup-stage input { touch-action: pan-y; cursor: ew-resize; }
+.cleanup-stage { width: 100%; touch-action: pan-y; }
+.cleanup-clean { pointer-events: none; }
+
+@media (min-width: 640px) and (max-width: 1024px) {
+  .app-shell [class~="md:grid-cols-2"],
+  .app-shell [class~="md:grid-cols-3"],
+  .app-shell [class~="sm:grid-cols-2"],
+  .app-shell [class~="lg:grid-cols-4"] { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .app-shell [class~="md:col-span-2"] { grid-column: 1 / -1; }
+  .login-page { display: grid; min-height: 100svh; place-items: center; padding: 24px; }
+  .login-layout { display: block; width: min(100%, 480px); border-radius: 24px; }
+  .login-marketing { display: none; }
+  .login-form { padding: 24px !important; }
+  .login-mobile-brand { display: flex; }
+  .login-mobile-brand p { white-space: nowrap; font-size: 15px; }
+  .login-form .text-xs, .login-form label { font-size: 15px !important; }
+}
+
+@media (max-width: 639px) {
+  body { background: linear-gradient(160deg, #153523 0%, #0f1a14 48%, #0a130d 100%); background-attachment: scroll; }
+  main { width: 100%; max-width: 100%; }
+  .app-shell { width: 100%; padding: 20px 16px calc(96px + env(safe-area-inset-bottom)) !important; }
+  .app-shell .card, .app-shell .glass-card { width: 100%; padding: 16px; }
+  .app-shell .grid[class~="md:grid-cols-2"],
+  .app-shell .grid[class~="md:grid-cols-3"],
+  .app-shell .grid[class~="sm:grid-cols-2"],
+  .app-shell .grid[class~="lg:grid-cols-4"] { grid-template-columns: minmax(0, 1fr) !important; }
+  .app-shell [class~="md:col-span-2"] { grid-column: auto; }
+  .app-shell .app-tabs { position: fixed; z-index: 50; right: 0; bottom: 0; left: 0; display: flex; width: 100%; max-width: 100vw; gap: 8px; margin: 0 !important; overflow-x: auto; overscroll-behavior-x: contain; padding: 8px 12px calc(8px + env(safe-area-inset-bottom)); border-top: 1px solid var(--glass-border); background: rgba(15, 26, 20, .97); backdrop-filter: blur(16px); scrollbar-width: thin; }
+  .app-tabs button { flex: 0 0 auto; min-width: 76px; min-height: 44px; padding: 8px 12px; white-space: nowrap; }
+  .app-shell :is(.text-xs, [class*="text-[10px]"], [class*="text-[11px]"]) { font-size: 15px !important; }
+  .app-shell h1 { font-size: clamp(1.65rem, 7vw, 2rem) !important; line-height: 1.15; }
+  .app-shell h2 { font-size: clamp(1.3rem, 5.5vw, 1.65rem) !important; }
+  .app-shell .metric { font-size: clamp(1.5rem, 7vw, 2rem); }
+  .app-shell input, .app-shell select, .app-shell textarea { max-width: 100%; min-width: 0; }
+  .app-shell .flex > * { min-width: 0; }
+  .app-shell svg { height: auto; max-width: 100%; }
+  .app-shell .policy-card pre { overflow-wrap: anywhere; }
+  .responsive-table { margin-inline: -4px; width: calc(100% + 8px); }
+  .responsive-table table { min-width: 640px; }
+  .login-page { display: block; min-height: 100svh; padding: 16px !important; }
+  .login-layout { display: block; width: 100%; max-width: none; overflow: visible; border-radius: 20px; background: transparent !important; box-shadow: none; }
+  .login-marketing { display: none; }
+  .login-form { width: 100%; padding: 16px !important; }
+  .login-mobile-brand { display: flex; }
+  .login-form .role-options { gap: 8px; }
+  .login-form .role-options button { min-height: 64px; padding: 8px; font-size: 15px; }
+  .login-mobile-brand p { white-space: nowrap; font-size: 15px; }
+  .login-form .text-xs, .login-form label { font-size: 15px !important; }
+  .cleanup-reveal { width: 100%; padding-inline: 16px !important; }
+  .cleanup-stage { height: clamp(240px, 72vw, 340px); }
+  .cleanup-stage input { min-height: 44px; }
+  .cleanup-label { bottom: 10px; font-size: 15px; }
+  .cleanup-label.before { left: 10px; }
+  .cleanup-label.after { right: 10px; }
+  .schedule-bin { min-height: 44px; }
+  .truck-loader { top: max(8px, env(safe-area-inset-top)); }
+}
+
+@media (min-width: 1025px) {
+  .login-mobile-brand { display: none; }
+  .login-layout { width: min(100%, 1200px); }
+}
