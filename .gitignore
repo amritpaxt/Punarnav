@@ -9,3 +9,4 @@ public/amplify_outputs.json
 .amplify-hosting/
 *.log
 .DS_Store
+*.zip
