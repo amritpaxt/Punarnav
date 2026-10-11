@@ -259,3 +259,17 @@ input[type="checkbox"], input[type="radio"] { min-height: 24px; min-width: 24px;
   .login-mobile-brand { display: none; }
   .login-layout { width: min(100%, 1200px); }
 }
+
+.recycle-loader { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: #A9B5A8; }
+.recycle-loader svg { display: block; flex: none; }
+.recycle-loader--small { width: 16px; height: 16px; vertical-align: middle; }
+.recycle-loader--small svg { width: 16px; height: 16px; }
+.recycle-loader--medium svg { width: 32px; height: 32px; }
+.recycle-loader--large svg { width: 64px; height: 64px; }
+.recycle-loader__arrows { transform-box: fill-box; transform-origin: center; animation: recycle-loader-turn 1.2s linear infinite; }
+.recycle-loader__label { color: #A9B5A8; font-size: 14px; }
+@keyframes recycle-loader-turn { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .recycle-loader__arrows { animation: recycle-loader-breathe 1.8s ease-in-out infinite alternate; }
+  @keyframes recycle-loader-breathe { to { opacity: .65; } }
+}
