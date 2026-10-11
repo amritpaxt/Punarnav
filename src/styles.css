@@ -163,6 +163,23 @@ body::after { bottom: -22vh; left: -12vw; width: min(62vw, 720px); height: min(6
 
 #root { position: relative; z-index: 1; }
 
+/* Interactive environmental depth for the resident workspace. */
+.app-shell { position: relative; isolation: isolate; }
+.app-shell::before { position: absolute; z-index: -1; top: 10%; right: -12%; width: 300px; height: 300px; border-radius: 50%; background: radial-gradient(circle, rgba(168,198,159,.14), transparent 68%); content: ''; filter: blur(10px); opacity: .55; transition: opacity 400ms ease, transform 600ms cubic-bezier(.2,.8,.2,1); }
+.app-shell:hover::before { opacity: 1; transform: scale(1.28) translate(-8%, 6%); }
+.resident-shell .card, .resident-shell .glass-card { position: relative; overflow: hidden; transition: transform 240ms cubic-bezier(.2,.8,.2,1), border-color 240ms ease, box-shadow 240ms ease, background 240ms ease; }
+.resident-shell .card::after, .resident-shell .glass-card::after { position: absolute; inset: -45% 38% auto -18%; height: 150%; border-radius: 50%; background: radial-gradient(circle, rgba(212,228,198,.16), transparent 66%); content: ''; opacity: 0; pointer-events: none; transition: opacity 240ms ease, transform 520ms cubic-bezier(.2,.8,.2,1); transform: translate3d(-12%, 14%, 0) scale(.8); }
+@media (hover: hover) { .resident-shell .card:hover, .resident-shell .glass-card:hover { border-color: rgba(212,228,198,.34); box-shadow: 0 18px 40px rgba(0,0,0,.32); transform: translateY(-4px); } .resident-shell .card:hover::after, .resident-shell .glass-card:hover::after { opacity: 1; transform: translate3d(8%, -4%, 0) scale(1.1); } }
+
+.points-wallet { position: fixed; z-index: 46; top: max(12px, env(safe-area-inset-top)); left: 50%; display: inline-flex; min-height: 52px; align-items: center; gap: 10px; min-width: min(320px, calc(100vw - 32px)); justify-content: center; border: 1px solid rgba(212,228,198,.4); border-radius: 999px; background: linear-gradient(115deg, rgba(14,44,30,.96), rgba(32,75,47,.96)); box-shadow: 0 16px 36px rgba(0,0,0,.28), inset 0 1px rgba(255,255,255,.12); color: var(--text); padding: 7px 11px 7px 16px; transform: translateX(-50%); transition: box-shadow 240ms ease, transform 240ms cubic-bezier(.2,.8,.2,1), border-color 240ms ease; }
+.points-wallet:hover { border-color: var(--gold); box-shadow: 0 20px 46px rgba(0,0,0,.38), 0 0 32px rgba(201,169,110,.18); transform: translateX(-50%) translateY(2px) scale(1.015); }
+.points-wallet-copy { display: flex; align-items: baseline; gap: 7px; }.points-wallet-copy > span { color: var(--text-2); font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }.points-wallet-copy strong { color: var(--gold); font-size: 20px; font-variant-numeric: tabular-nums; }.points-wallet-action { border-radius: 999px; background: var(--gold); color: var(--bg); padding: 6px 10px; font-size: 12px; font-weight: 900; }.points-wallet-spark { color: var(--primary-hi); font-size: 18px; animation: wallet-spark 2.4s ease-in-out infinite; }
+.points-wallet-backdrop { position: fixed; z-index: 70; inset: 0; display: grid; place-items: start center; padding: max(84px, calc(env(safe-area-inset-top) + 72px)) 16px 20px; background: rgba(6,16,10,.52); backdrop-filter: blur(9px); }
+.points-wallet-panel { width: min(100%, 480px); border: 1px solid var(--glass-border); border-radius: 28px; background: linear-gradient(145deg, #294b35, #15271b); box-shadow: 0 28px 70px rgba(0,0,0,.45); padding: 22px; }
+.amazon-reward { display: flex; gap: 14px; align-items: center; border: 1px solid rgba(201,169,110,.32); border-radius: 20px; background: rgba(201,169,110,.11); padding: 16px; }.amazon-reward-mark { display: grid; width: 48px; height: 48px; flex: 0 0 auto; place-items: center; border-radius: 15px; background: var(--gold); color: var(--bg); font-family: Georgia, serif; font-size: 30px; font-style: italic; font-weight: 800; }
+@keyframes wallet-spark { 50% { filter: drop-shadow(0 0 7px rgba(212,228,198,.9)); transform: rotate(18deg) scale(1.13); } }
+.resident-shell { padding-top: 88px !important; }
+
 /* Shared responsive guardrails for the local role screens and AWS sign-in. */
 html, body, #root { width: 100%; max-width: 100%; overflow-x: clip; }
 main, section, nav, .card, .glass-card, .app-shell, .login-layout { min-width: 0; }
@@ -232,6 +249,10 @@ input[type="checkbox"], input[type="radio"] { min-height: 24px; min-width: 24px;
   .cleanup-label.after { right: 10px; }
   .schedule-bin { min-height: 44px; }
   .truck-loader { top: max(8px, env(safe-area-inset-top)); }
+  .points-wallet { min-width: min(336px, calc(100vw - 24px)); top: max(8px, env(safe-area-inset-top)); }
+  .points-wallet-copy > span { display: none; }
+  .points-wallet-action { padding: 6px 9px; }
+  .resident-shell { padding-top: 82px !important; }
 }
 
 @media (min-width: 1025px) {
